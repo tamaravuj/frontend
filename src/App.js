@@ -1,24 +1,38 @@
-import logo from './logo.svg';
+import { useMemo, useState } from 'react';
+import Footer from './components/Footer';
+import Header from './components/Header';
+import Hero from './components/Hero';
+import PackageSection from './components/PackageSection';
+import ProductSection from './components/ProductSection';
+import Stats from './components/Stats';
+import { categories, packages, products } from './data/shopData';
 import './App.css';
 
 function App() {
+  const [selectedCategory, setSelectedCategory] = useState('sve');
+
+  const visibleProducts = useMemo(() => {
+    if (selectedCategory === 'sve') {
+      return products;
+    }
+
+    return products.filter((product) => product.category === selectedCategory);
+  }, [selectedCategory]);
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <main className="app">
+      <Header />
+      <Hero />
+      <Stats productTotal={products.length} packageTotal={packages.length} />
+      <ProductSection
+        categories={categories}
+        products={visibleProducts}
+        selectedCategory={selectedCategory}
+        onCategoryChange={setSelectedCategory}
+      />
+      <PackageSection packages={packages} />
+      <Footer />
+    </main>
   );
 }
 

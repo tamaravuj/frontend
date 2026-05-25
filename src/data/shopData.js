@@ -1,0 +1,75 @@
+export const products = [
+  {
+    id: 1,
+    name: 'Zeleni balans',
+    category: 'detoks',
+    price: 340,
+    rating: 4.8,
+    color: 'green',
+    image: '/images/detox.jpeg',
+    description: 'Jabuka, krastavac, celer, limeta i nana.',
+    nutrition: '82 kcal | vitamin C | kalijum',
+  },
+  {
+    id: 2,
+    name: 'Citrus imunitet',
+    category: 'imunitet',
+    price: 360,
+    rating: 4.9,
+    color: 'orange',
+    image: '/images/citrus.jpeg',
+    description: 'Narandza, grejp, limun, djumbir i med.',
+    nutrition: '96 kcal | vitamin C | antioksidansi',
+  },
+  {
+    id: 3,
+    name: 'Crvena energija',
+    category: 'energija',
+    price: 390,
+    rating: 4.7,
+    color: 'red',
+    image: '/images/crveni.jpeg',
+    description: 'Cvekla, sargarepa, jabuka i limun.',
+    nutrition: '110 kcal | gvozdje | folati',
+  },
+  {
+    id: 4,
+    name: 'Tropski protein',
+    category: 'trening',
+    price: 430,
+    rating: 4.6,
+    color: 'yellow',
+    image: '/images/protein.jpeg',
+    description: 'Ananas, banana, kokosova voda i chia semenke.',
+    nutrition: '148 kcal | elektroliti | vlakna',
+  },
+];
+
+export const packages = [
+  {
+    id: 101,
+    name: 'Detoks paket',
+    category: 'paket',
+    price: 1890,
+    description: 'Sest sokova za lagan pocetak nedelje.',
+    items: '2x Zeleni balans, 2x Citrus imunitet, 2x Crvena energija',
+  },
+  {
+    id: 102,
+    name: 'Office paket',
+    category: 'paket',
+    price: 1590,
+    description: 'Pet sokova za posao, fakultet ili ucenje.',
+    items: '3x Citrus imunitet, 2x Tropski protein',
+  },
+  {
+    id: 103,
+    name: 'Porodicni paket',
+    category: 'paket',
+    price: 2690,
+    description: 'Veca kutija sveze cedjenih sokova za porodicu.',
+    items: '3x Zeleni balans, 3x Citrus imunitet, 2x Crvena energija',
+  },
+];
+
+export const categories = ['sve', 'detoks', 'imunitet', 'energija', 'trening'];
