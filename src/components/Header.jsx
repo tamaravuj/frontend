@@ -1,4 +1,9 @@
-function Header({ cartCount, currentUser, onLogout, onNavigate }) {
+function Header({ cartCount, currentUser, onNavigate }) {
+  const goTo = (event, path) => {
+    event.preventDefault();
+    onNavigate(path);
+  };
+
   const goToHomeSection = (event, sectionId) => {
     event.preventDefault();
     onNavigate('/');
@@ -6,16 +11,6 @@ function Header({ cartCount, currentUser, onLogout, onNavigate }) {
     window.requestAnimationFrame(() => {
       document.querySelector(sectionId)?.scrollIntoView({ behavior: 'smooth' });
     });
-  };
-
-  const goToLogin = (event) => {
-    event.preventDefault();
-    onNavigate('/prijava');
-  };
-
-  const goToCart = (event) => {
-    event.preventDefault();
-    onNavigate(currentUser ? '/korpa' : '/prijava');
   };
 
   return (
@@ -34,23 +29,26 @@ function Header({ cartCount, currentUser, onLogout, onNavigate }) {
         <a href="#paketi" onClick={(event) => goToHomeSection(event, '#paketi')}>
           Paketi
         </a>
-        <a href="/korpa" onClick={goToCart}>
+        <a href="/korpa" onClick={(event) => goTo(event, currentUser ? '/korpa' : '/prijava')}>
           Korpa ({cartCount})
         </a>
-        {currentUser ? (
-          <button type="button" onClick={onLogout}>
-            Odjava
-          </button>
-        ) : (
-          <a href="/prijava" onClick={goToLogin}>
+        {!currentUser && (
+          <a href="/prijava" onClick={(event) => goTo(event, '/prijava')}>
             Prijava
+          </a>
+        )}
+        {currentUser?.role === 'admin' && (
+          <a href="/admin" onClick={(event) => goTo(event, '/admin')}>
+            Admin
           </a>
         )}
       </div>
 
       <div className="account-actions">
         {currentUser ? (
-          <span className="contact-link">{currentUser.name || currentUser.email}</span>
+          <a className="contact-link" href="/profile" onClick={(event) => goTo(event, '/profile')}>
+            {currentUser.name || currentUser.email}
+          </a>
         ) : (
           <a className="contact-link" href="tel:+381601234567">
             060 123 4567
