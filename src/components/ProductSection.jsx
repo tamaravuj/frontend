@@ -1,4 +1,4 @@
-function ProductSection({ categories, products, selectedCategory, onCategoryChange }) {
+function ProductSection({ categories, products, selectedCategory, onAddToCart, onCategoryChange }) {
   return (
     <section className="section" id="katalog">
       <div className="section-heading">
@@ -33,6 +33,9 @@ function ProductSection({ categories, products, selectedCategory, onCategoryChan
                 <strong>{product.price} RSD</strong>
                 <span>Ocena {product.rating}</span>
               </div>
+              <button className="add-cart-button" type="button" onClick={() => onAddToCart(product)}>
+                Dodaj u korpu
+              </button>
             </div>
           </article>
         ))}

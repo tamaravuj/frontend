@@ -1,4 +1,4 @@
-function PackageSection({ packages }) {
+function PackageSection({ onAddToCart, packages }) {
   return (
     <section className="section packages-section" id="paketi">
       <div className="section-heading">
@@ -17,6 +17,9 @@ function PackageSection({ packages }) {
             <div className="card-footer">
               <strong>{item.price} RSD</strong>
             </div>
+            <button className="add-cart-button" type="button" onClick={() => onAddToCart(item)}>
+              Dodaj u korpu
+            </button>
           </article>
         ))}
       </div>

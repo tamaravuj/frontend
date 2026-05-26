@@ -1,4 +1,4 @@
-function Header({ onNavigate }) {
+function Header({ cartCount, currentUser, onLogout, onNavigate }) {
   const goToHomeSection = (event, sectionId) => {
     event.preventDefault();
     onNavigate('/');
@@ -11,6 +11,11 @@ function Header({ onNavigate }) {
   const goToLogin = (event) => {
     event.preventDefault();
     onNavigate('/prijava');
+  };
+
+  const goToCart = (event) => {
+    event.preventDefault();
+    onNavigate(currentUser ? '/korpa' : '/prijava');
   };
 
   return (
@@ -29,15 +34,28 @@ function Header({ onNavigate }) {
         <a href="#paketi" onClick={(event) => goToHomeSection(event, '#paketi')}>
           Paketi
         </a>
-        <a href="/prijava" onClick={goToLogin}>
-          Prijava
+        <a href="/korpa" onClick={goToCart}>
+          Korpa ({cartCount})
         </a>
+        {currentUser ? (
+          <button type="button" onClick={onLogout}>
+            Odjava
+          </button>
+        ) : (
+          <a href="/prijava" onClick={goToLogin}>
+            Prijava
+          </a>
+        )}
       </div>
 
       <div className="account-actions">
-        <a className="contact-link" href="tel:+381601234567">
-          060 123 4567
-        </a>
+        {currentUser ? (
+          <span className="contact-link">{currentUser.name || currentUser.email}</span>
+        ) : (
+          <a className="contact-link" href="tel:+381601234567">
+            060 123 4567
+          </a>
+        )}
       </div>
     </nav>
   );
