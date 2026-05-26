@@ -1,9 +1,11 @@
 function Header({ cartCount, currentUser, onNavigate }) {
+  // Linkovi menjaju stranicu bez ponovnog ucitavanja cele aplikacije.
   const goTo = (event, path) => {
     event.preventDefault();
     onNavigate(path);
   };
 
+  // Za sekcije na pocetnoj strani prvo se ide na pocetnu, pa se skroluje do dela stranice.
   const goToHomeSection = (event, sectionId) => {
     event.preventDefault();
     onNavigate('/');

@@ -35,6 +35,7 @@ const defaultAdmin = {
   role: 'admin',
 };
 
+// Citanje iz localStorage je izdvojeno da aplikacija ne pukne ako podaci nisu ispravni.
 const readStoredJson = (key, fallback) => {
   try {
     const stored = window.localStorage.getItem(key);
@@ -51,6 +52,7 @@ const writeStoredJson = (key, value) => {
 const useStoredState = (key, fallback) => {
   const [value, setValue] = useState(() => readStoredJson(key, fallback));
 
+  // Svaka promena stanja se odmah cuva, pa podaci ostaju i posle osvezavanja stranice.
   useEffect(() => {
     writeStoredJson(key, value);
   }, [key, value]);
@@ -97,6 +99,7 @@ function App() {
   const [cartItems, setCartItems] = useState([]);
   const [checkout, setCheckout] = useState(emptyCheckout);
 
+  // Korpa i podaci za kupovinu se ucitavaju za trenutno prijavljenog korisnika.
   useEffect(() => {
     if (!currentUser?.email) {
       setCartItems([]);
@@ -124,6 +127,7 @@ function App() {
     writeStoredJson(getCheckoutStorageKey(currentUser.email), checkout);
   }, [checkout, currentUser]);
 
+  // Aplikacija koristi svoju jednostavnu navigaciju preko adrese u browseru.
   useEffect(() => {
     const handlePopState = () => setPage(window.location.pathname);
 
@@ -160,6 +164,7 @@ function App() {
     }
 
     setCartItems((items) => {
+      // Isti proizvod se ne duplira u korpi, vec mu se samo poveca kolicina.
       const cartId = `${type}-${item.id}`;
       const existing = items.find((cartItem) => cartItem.cartId === cartId);
 
@@ -243,6 +248,7 @@ function App() {
       return;
     }
 
+    // Porudzbina cuva sve bitne podatke u trenutku kupovine.
     const order = {
       id: createOrderId(),
       createdAt: new Date().toISOString(),
@@ -572,7 +578,7 @@ function AuthPage({ currentUser, onLogin, page, onNavigate }) {
 function AuthRequired({ onNavigate }) {
   return (
     <section className="auth-page" aria-labelledby="cart-auth-title">
-      <div className="auth-form auth-panel">
+      <div className="auth-form">
         <p className="eyebrow">Korpa</p>
         <h1 id="cart-auth-title">Prijava je obavezna</h1>
         <p className="auth-note">Samo prijavljeni korisnici mogu da vide korpu i dodaju proizvode.</p>
@@ -1103,7 +1109,7 @@ function ReviewOrderPage({ cartItems, checkout, onCompleteOrder, onNavigate }) {
 function CompleteOrderPage({ onNavigate }) {
   return (
     <section className="auth-page" aria-labelledby="complete-title">
-      <div className="auth-form auth-panel">
+      <div className="auth-form">
         <p className="eyebrow">Porudzbina</p>
         <h1 id="complete-title">Porudzbina je poslata</h1>
         <p className="auth-note">Hvala na kupovini. Vasa porudzbina je uspesno zabelezena.</p>
@@ -1302,6 +1308,7 @@ function SummaryRow({ label, value }) {
 }
 
 function getOrderTotals(cartItems) {
+  // Na jednom mestu racunamo iznose koji se prikazuju u korpi i pregledu porudzbine.
   const itemCount = cartItems.reduce((total, item) => total + item.quantity, 0);
   const itemsPrice = cartItems.reduce((total, item) => total + item.price * item.quantity, 0);
   const shippingPrice = itemsPrice > 2500 || itemsPrice === 0 ? 0 : 350;
