@@ -1,8 +1,9 @@
 function Footer() {
+  const currentYear = new Date().getFullYear();
+
   return (
     <footer className="footer">
-      <strong>FreshFit sokovi</strong>
-      <span>Prirodni sokovi i paketi za poneti</span>
+      <p>&copy; {currentYear} FreshFit sokovi. Sva prava zadrzana.</p>
     </footer>
   );
 }

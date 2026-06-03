@@ -8,9 +8,7 @@ function Hero() {
 
         <div className="hero-actions">
           <a href="#katalog">Pogledaj proizvode</a>
-          <a className="secondary-link" href="#paketi">
-            Pogledaj pakete
-          </a>
+          <a className="secondary-link" href="#paketi">Pogledaj pakete</a>
         </div>
       </section>
 
