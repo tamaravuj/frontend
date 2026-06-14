@@ -1,36 +1,64 @@
-export const addToCart = (cartItems, item, type = 'product', maxQuantity = 12) => {
-  const cartId = `${type}-${item.id}`;
-  const existItem = cartItems.find((x) => x.cartId === cartId);
+import { createSlice } from '@reduxjs/toolkit';
+import { updateCart } from '../utils/cartUtils';
 
-  if (existItem) {
-    return cartItems.map((x) =>
-      x.cartId === existItem.cartId ? { ...x, quantity: Math.min(x.quantity + 1, maxQuantity) } : x
-    );
-  }
+const initialState = localStorage.getItem('cart')
+    ? JSON.parse(localStorage.getItem('cart'))
+    : { cartItems: [], shippingAddress: {}, paymentMethod: 'PayPal' };
 
-  return [
-    ...cartItems,
-    {
-      cartId,
-      id: item.id,
-      type,
-      name: item.name,
-      price: item.price,
-      image: item.image,
-      description: item.description,
-      quantity: 1,
+const cartSlice = createSlice({
+    name: 'cart',
+    initialState,
+    reducers: {
+        addToCart: (state, action) => {
+            const item = action.payload;
+            const cartId = `${item.type || 'product'}-${item._id}`;
+            const existItem = state.cartItems.find((x) => x.cartId === cartId);
+
+            if (existItem) {
+                state.cartItems = state.cartItems.map((x) =>
+                    x.cartId === cartId
+                        ? { ...x, qty: Math.min(x.qty + 1, 12) }
+                        : x
+                );
+            } else {
+                state.cartItems = [...state.cartItems, { ...item, cartId, qty: 1 }];
+            }
+
+            return updateCart(state);
+        },
+        removeFromCart: (state, action) => {
+            state.cartItems = state.cartItems.filter((x) => x.cartId !== action.payload);
+            return updateCart(state);
+        },
+        saveShippingAddress: (state, action) => {
+            state.shippingAddress = action.payload;
+            return updateCart(state);
+        },
+        savePaymentMethod: (state, action) => {
+            state.paymentMethod = action.payload;
+            return updateCart(state);
+        },
+        clearCartItems: (state) => {
+            state.cartItems = [];
+            return updateCart(state);
+        },
+        updateCartQty: (state, action) => {
+            const { cartId, qty } = action.payload;
+            state.cartItems = state.cartItems.map((x) =>
+                x.cartId === cartId ? { ...x, qty: Math.max(1, Math.min(12, qty)) } : x
+            );
+            return updateCart(state);
+        },
     },
-  ];
-};
+});
 
-export const updateCartQuantity = (cartItems, cartId, quantity, maxQuantity = 12) => {
-  const nextQuantity = Math.max(1, Math.min(maxQuantity, quantity));
+export const {
+    addToCart,
+    removeFromCart,
+    saveShippingAddress,
+    savePaymentMethod,
+    clearCartItems,
+    updateCartQty,
+} = cartSlice.actions;
 
-  return cartItems.map((item) => (item.cartId === cartId ? { ...item, quantity: nextQuantity } : item));
-};
-
-export const removeFromCart = (cartItems, cartId) => cartItems.filter((item) => item.cartId !== cartId);
-
-export const clearCartItems = () => [];
-
-export const getCartCount = (cartItems) => cartItems.reduce((total, item) => total + item.quantity, 0);
+export default cartSlice.reducer;

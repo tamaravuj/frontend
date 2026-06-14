@@ -1,21 +1,26 @@
 export const addDecimal = (num) => {
-  return (Math.round(num * 100) / 100).toFixed(2);
+    return (Math.round(num * 100) / 100).toFixed(2);
 };
 
 export const formatPrice = (price) => `${Number(price || 0).toFixed(2)} RSD`;
 
-export const getOrderTotals = (cartItems) => {
-  const itemCount = cartItems.reduce((total, item) => total + item.quantity, 0);
-  const itemsPrice = cartItems.reduce((total, item) => total + item.price * item.quantity, 0);
-  const shippingPrice = itemsPrice > 2500 || itemsPrice === 0 ? 0 : 350;
-  const taxPrice = Math.round(itemsPrice * 0.2);
-  const totalPrice = itemsPrice + shippingPrice + taxPrice;
+export const updateCart = (state) => {
+    const itemsPrice = state.cartItems.reduce(
+        (acc, item) => acc + item.price * item.qty,
+        0
+    );
 
-  return {
-    itemCount,
-    itemsPrice,
-    shippingPrice,
-    taxPrice,
-    totalPrice,
-  };
+    state.itemsPrice = addDecimal(itemsPrice);
+
+    const shippingPrice = itemsPrice > 2500 ? 0 : 350;
+    state.shippingPrice = addDecimal(shippingPrice);
+
+    const taxPrice = 0.2 * itemsPrice;
+    state.taxPrice = addDecimal(taxPrice);
+
+    state.totalPrice = addDecimal(itemsPrice + shippingPrice + taxPrice);
+
+    localStorage.setItem('cart', JSON.stringify(state));
+
+    return state;
 };

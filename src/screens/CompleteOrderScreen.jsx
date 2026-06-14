@@ -1,16 +1,13 @@
-function CompleteOrderScreen({ onNavigate }) {
-  return (
-    <section className="auth-page" aria-labelledby="complete-title">
-      <div className="auth-form">
-        <p className="eyebrow">Porudzbina</p>
-        <h1 id="complete-title">Porudzbina je poslata</h1>
-        <p className="auth-note">Hvala na kupovini. Vasa porudzbina je uspesno zabelezena.</p>
-        <button className="auth-submit" type="button" onClick={() => onNavigate('/')}>
-          Nazad na proizvode
-        </button>
-      </div>
-    </section>
-  );
-}
+import { Link } from 'react-router-dom';
+import Message from '../components/Message';
+
+const CompleteOrderScreen = () => {
+    return (
+        <Message variant="success">
+            Hvala na kupovini! Vasa porudzbina je uspesno zabelezena.{' '}
+            <Link to="/">Nazad na proizvode</Link>
+        </Message>
+    );
+};
 
 export default CompleteOrderScreen;

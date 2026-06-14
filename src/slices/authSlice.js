@@ -1,8 +1,26 @@
-export const updateUserProfile = (users, currentUser, { name, password }) => {
-  const updatedUser = { ...currentUser, name };
-  const updatedUsers = users.map((user) =>
-    user.email === currentUser.email ? { ...user, name, password: password || user.password } : user
-  );
+import { createSlice } from '@reduxjs/toolkit';
 
-  return { updatedUser, updatedUsers };
+const initialState = {
+    userInfo: localStorage.getItem('userInfo')
+        ? JSON.parse(localStorage.getItem('userInfo'))
+        : null,
 };
+
+const authSlice = createSlice({
+    name: 'auth',
+    initialState,
+    reducers: {
+        setCredentials: (state, action) => {
+            state.userInfo = action.payload;
+            localStorage.setItem('userInfo', JSON.stringify(action.payload));
+        },
+        logout: (state) => {
+            state.userInfo = null;
+            localStorage.removeItem('userInfo');
+        }
+    }
+});
+
+export const { setCredentials, logout } = authSlice.actions;
+
+export default authSlice.reducer;

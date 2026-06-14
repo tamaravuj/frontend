@@ -1,7 +1,9 @@
-import AuthRequired from './AuthRequired';
+import { Outlet, Navigate } from 'react-router-dom';
+import { useSelector } from 'react-redux';
 
-const PrivateRoute = ({ children, currentUser, onNavigate }) => {
-  return currentUser ? children : <AuthRequired onNavigate={onNavigate} />;
+const PrivateRoute = () => {
+    const { userInfo } = useSelector((state) => state.auth);
+    return userInfo ? <Outlet /> : <Navigate to='/prijava' replace />;
 };
 
 export default PrivateRoute;

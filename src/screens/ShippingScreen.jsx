@@ -1,76 +1,83 @@
 import { useState } from 'react';
-import CheckoutSteps from '../components/CheckoutSteps';
-import { emptyCheckout } from '../constants';
+import { useDispatch, useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
+import { saveShippingAddress } from '../slices/cartSlice';
 
-function ShippingScreen({ checkout, onNavigate, onSaveShipping }) {
-  const [form, setForm] = useState(checkout.shippingAddress || emptyCheckout.shippingAddress);
+const ShippingScreen = () => {
+    const { shippingAddress } = useSelector((state) => state.cart);
 
-  const updateField = (field, value) => {
-    setForm((current) => ({ ...current, [field]: value }));
-  };
+    const [address, setAddress] = useState(shippingAddress?.address || '');
+    const [city, setCity] = useState(shippingAddress?.city || '');
+    const [postalCode, setPostalCode] = useState(shippingAddress?.postalCode || '');
+    const [country, setCountry] = useState(shippingAddress?.country || '');
 
-  const submitHandler = (event) => {
-    event.preventDefault();
-    onSaveShipping(form);
-  };
+    const navigate = useNavigate();
+    const dispatch = useDispatch();
 
-  return (
-    <section className="section checkout-section" aria-labelledby="shipping-title">
-      <CheckoutSteps activeStep={2} onNavigate={onNavigate} />
-      <div className="checkout-panel">
-        <h1 id="shipping-title">Podaci o dostavi</h1>
-        <form className="checkout-form" onSubmit={submitHandler}>
-          <label>
-            Adresa
-            <input
-              name="address"
-              onChange={(event) => updateField('address', event.target.value)}
-              placeholder="Unesite adresu"
-              required
-              type="text"
-              value={form.address}
-            />
-          </label>
-          <label>
-            Grad
-            <input
-              name="city"
-              onChange={(event) => updateField('city', event.target.value)}
-              placeholder="Unesite grad"
-              required
-              type="text"
-              value={form.city}
-            />
-          </label>
-          <label>
-            Postanski broj
-            <input
-              name="postalCode"
-              onChange={(event) => updateField('postalCode', event.target.value)}
-              placeholder="Unesite postanski broj"
-              required
-              type="text"
-              value={form.postalCode}
-            />
-          </label>
-          <label>
-            Drzava
-            <input
-              name="country"
-              onChange={(event) => updateField('country', event.target.value)}
-              placeholder="Unesite drzavu"
-              required
-              type="text"
-              value={form.country}
-            />
-          </label>
-          <button className="auth-submit" type="submit">
-            Nastavi
-          </button>
-        </form>
-      </div>
-    </section>
-  );
-}
+    const submitHandler = (e) => {
+        e.preventDefault();
+        dispatch(saveShippingAddress({ address, city, postalCode, country }));
+        navigate('/payment');
+    };
+
+    return (
+        <div className="checkout-section">
+            <div className="checkout-steps">
+                <button className="enabled"><span>1</span> Prijava</button>
+                <button className="enabled"><span>2</span> Dostava</button>
+                <button disabled><span>3</span> Placanje</button>
+                <button disabled><span>4</span> Pregled</button>
+            </div>
+            <div className="checkout-panel">
+                <h1>Podaci o dostavi</h1>
+                <form className="checkout-form" onSubmit={submitHandler}>
+                    <label>
+                        Adresa
+                        <input
+                            type="text"
+                            placeholder="Unesite adresu"
+                            value={address}
+                            required
+                            onChange={(e) => setAddress(e.target.value)}
+                        />
+                    </label>
+                    <label>
+                        Grad
+                        <input
+                            type="text"
+                            placeholder="Unesite grad"
+                            value={city}
+                            required
+                            onChange={(e) => setCity(e.target.value)}
+                        />
+                    </label>
+                    <label>
+                        Postanski broj
+                        <input
+                            type="text"
+                            placeholder="Unesite postanski broj"
+                            value={postalCode}
+                            required
+                            onChange={(e) => setPostalCode(e.target.value)}
+                        />
+                    </label>
+                    <label>
+                        Drzava
+                        <input
+                            type="text"
+                            placeholder="Unesite drzavu"
+                            value={country}
+                            required
+                            onChange={(e) => setCountry(e.target.value)}
+                        />
+                    </label>
+                    <button type="submit" className="auth-submit">
+                        Nastavi
+                    </button>
+                </form>
+            </div>
+        </div>
+    );
+};
 
 export default ShippingScreen;

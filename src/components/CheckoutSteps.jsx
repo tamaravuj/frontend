@@ -1,29 +1,47 @@
-import { authRoutes, paymentRoute, reviewRoute, shippingRoute } from '../constants';
+import { Nav } from 'react-bootstrap';
+import { LinkContainer } from 'react-router-bootstrap';
 
-function CheckoutSteps({ activeStep, onNavigate }) {
-  const steps = [
-    { id: 1, label: 'Prijava', path: authRoutes.login },
-    { id: 2, label: 'Podaci o dostavi', path: shippingRoute },
-    { id: 3, label: 'Placanje', path: paymentRoute },
-    { id: 4, label: 'Pregled porudzbine', path: reviewRoute },
-  ];
-
-  return (
-    <nav className="checkout-steps" aria-label="Koraci kupovine">
-      {steps.map((step) => (
-        <button
-          className={activeStep >= step.id ? 'enabled' : ''}
-          disabled={activeStep < step.id}
-          key={step.id}
-          onClick={() => onNavigate(step.path)}
-          type="button"
-        >
-          <span>{step.id}</span>
-          {step.label}
-        </button>
-      ))}
-    </nav>
-  );
-}
+const CheckoutSteps = ({ step1, step2, step3, step4 }) => {
+    return (
+        <Nav className="justify-content-center mb-4">
+            <Nav.Item>
+                {step1 ? (
+                    <LinkContainer to="/prijava">
+                        <Nav.Link>Prijava</Nav.Link>
+                    </LinkContainer>
+                ) : (
+                    <Nav.Link disabled>Prijava</Nav.Link>
+                )}
+            </Nav.Item>
+            <Nav.Item>
+                {step2 ? (
+                    <LinkContainer to="/shipping">
+                        <Nav.Link>Podaci o dostavi</Nav.Link>
+                    </LinkContainer>
+                ) : (
+                    <Nav.Link disabled>Podaci o dostavi</Nav.Link>
+                )}
+            </Nav.Item>
+            <Nav.Item>
+                {step3 ? (
+                    <LinkContainer to="/payment">
+                        <Nav.Link>Placanje</Nav.Link>
+                    </LinkContainer>
+                ) : (
+                    <Nav.Link disabled>Placanje</Nav.Link>
+                )}
+            </Nav.Item>
+            <Nav.Item>
+                {step4 ? (
+                    <LinkContainer to="/placeorder">
+                        <Nav.Link>Pregled porudzbine</Nav.Link>
+                    </LinkContainer>
+                ) : (
+                    <Nav.Link disabled>Pregled porudzbine</Nav.Link>
+                )}
+            </Nav.Item>
+        </Nav>
+    );
+};
 
 export default CheckoutSteps;

@@ -1,13 +1,22 @@
-const Rating = ({ value, text }) => {
-  const ratingValue = Number(value || 0);
-  const ratingPercent = `${(Math.max(0, Math.min(5, ratingValue)) / 5) * 100}%`;
+import { FaStar, FaStarHalfAlt, FaRegStar } from 'react-icons/fa';
 
-  return (
-    <div className="rating" aria-label={`Ocena ${ratingValue} od 5`}>
-      <span className="rating-stars" style={{ '--rating-percent': ratingPercent }} aria-hidden="true" />
-      <span className="rating-text">{text && text}</span>
-    </div>
-  );
+const Rating = ({ value, text }) => {
+    return (
+        <div className="rating">
+            {[1, 2, 3, 4, 5].map((star) => (
+                <span key={star}>
+                    {value >= star ? (
+                        <FaStar />
+                    ) : value >= star - 0.5 ? (
+                        <FaStarHalfAlt />
+                    ) : (
+                        <FaRegStar />
+                    )}
+                </span>
+            ))}
+            <span className="rating-text">{text && text}</span>
+        </div>
+    );
 };
 
 export default Rating;

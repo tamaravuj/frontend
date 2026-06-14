@@ -1,61 +1,77 @@
-import { useState } from 'react';
-import { authRoutes } from '../constants';
-import { getStoredUsers } from '../utils/storage';
+import { useState, useEffect } from 'react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+import Loader from '../components/Loader';
+import { useLoginMutation } from '../slices/usersApiSlice';
+import { setCredentials } from '../slices/authSlice';
+import { toast } from 'react-toastify';
 
-function LoginScreen({ currentUser, onLogin, onNavigate }) {
-  const [message, setMessage] = useState('');
+const LoginScreen = () => {
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
 
-  const handleSubmit = (event) => {
-    event.preventDefault();
+    const dispatch = useDispatch();
+    const navigate = useNavigate();
 
-    const formData = new FormData(event.currentTarget);
-    const email = formData.get('email').trim().toLowerCase();
-    const password = formData.get('password');
-    const users = getStoredUsers();
-    const user = users.find((storedUser) => storedUser.email === email && storedUser.password === password);
+    const [login, { isLoading }] = useLoginMutation();
+    const { userInfo } = useSelector((state) => state.auth);
 
-    if (!user) {
-      setMessage('Email ili lozinka nisu tacni.');
-      return;
-    }
+    const { search } = useLocation();
+    const sp = new URLSearchParams(search);
+    const redirect = sp.get('redirect') || '/';
 
-    onLogin({ email: user.email, name: user.name, role: user.role || 'user' });
-  };
+    useEffect(() => {
+        if (userInfo) navigate(redirect);
+    }, [userInfo, redirect, navigate]);
 
-  return (
-    <section className="auth-page" aria-labelledby="login-title">
-      <form className="auth-form" onSubmit={handleSubmit}>
-        <p className="eyebrow">Dobrodosli nazad</p>
-        <h1 id="login-title">Prijava</h1>
+    const submitHandler = async (e) => {
+        e.preventDefault();
+        try {
+            const res = await login({ email, password }).unwrap();
+            dispatch(setCredentials({ ...res }));
+            navigate(redirect);
+        } catch (err) {
+            toast.error(err?.data?.message || err.error);
+        }
+    };
 
-        <label>
-          Email
-          <input type="email" name="email" autoComplete="email" placeholder="primer@email.com" required />
-        </label>
-
-        <label>
-          Lozinka
-          <input type="password" name="password" autoComplete="current-password" placeholder="Unesi lozinku" required />
-        </label>
-
-        {message && <p className="form-message">{message}</p>}
-        {currentUser && (
-          <p className="form-message success">Vec si prijavljen kao {currentUser.name || currentUser.email}.</p>
-        )}
-
-        <button className="auth-submit" type="submit">
-          Prijavi se
-        </button>
-
-        <p className="auth-switch">
-          Nemas nalog?{' '}
-          <button type="button" onClick={() => onNavigate(authRoutes.register)}>
-            Registruj se
-          </button>
-        </p>
-      </form>
-    </section>
-  );
-}
+    return (
+        <div className="auth-page">
+            <div className="auth-form">
+                <h1>Prijavite se</h1>
+                <form onSubmit={submitHandler}>
+                    <label>
+                        Email
+                        <input
+                            type="email"
+                            placeholder="Upisite email"
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
+                        />
+                    </label>
+                    <label>
+                        Lozinka
+                        <input
+                            type="password"
+                            placeholder="Upisite lozinku"
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                        />
+                    </label>
+                    <button type="submit" className="auth-submit" disabled={isLoading}>
+                        Prijava
+                    </button>
+                    {isLoading && <Loader />}
+                </form>
+                <p className="auth-switch">
+                    Nemate nalog?{' '}
+                    <Link to={redirect ? `/registracija?redirect=${redirect}` : '/registracija'}>
+                        Registrujte se
+                    </Link>
+                </p>
+            </div>
+        </div>
+    );
+};
 
 export default LoginScreen;

@@ -1,64 +1,86 @@
-function Header({ cartCount, currentUser, onNavigate }) {
-  const goTo = (event, path) => {
-    event.preventDefault();
-    onNavigate(path);
-  };
+import { useNavigate, useLocation } from 'react-router-dom';
+import { useSelector, useDispatch } from 'react-redux';
+import { useLogoutMutation } from '../slices/usersApiSlice';
+import { logout } from '../slices/authSlice';
+import { useEffect } from 'react';
 
-  const goToHomeSection = (event, sectionId) => {
-    event.preventDefault();
-    onNavigate('/');
+const Header = () => {
+    const { cartItems } = useSelector((state) => state.cart);
+    const { userInfo } = useSelector((state) => state.auth);
+    const dispatch = useDispatch();
+    const navigate = useNavigate();
+    const location = useLocation();
+    const [logoutApiCall] = useLogoutMutation();
 
-    window.requestAnimationFrame(() => {
-      document.querySelector(sectionId)?.scrollIntoView({ behavior: 'smooth' });
-    });
-  };
+    const cartCount = cartItems.reduce((a, c) => a + c.qty, 0);
 
-  return (
-    <header>
-      <nav className="topbar">
-        <a className="brand" href="#pocetna" onClick={(event) => goToHomeSection(event, '#pocetna')}>
-          FreshFit sokovi
-        </a>
+    useEffect(() => {
+        if (location.hash) {
+            setTimeout(() => {
+                document.querySelector(location.hash)?.scrollIntoView({ behavior: 'smooth' });
+            }, 100);
+        }
+    }, [location]);
 
-        <div className="nav-links">
-          <a href="#pocetna" onClick={(event) => goToHomeSection(event, '#pocetna')}>
-            Pocetna
-          </a>
-          <a href="#katalog" onClick={(event) => goToHomeSection(event, '#katalog')}>
-            Proizvodi
-          </a>
-          <a href="#paketi" onClick={(event) => goToHomeSection(event, '#paketi')}>
-            Paketi
-          </a>
-          <a href="/korpa" onClick={(event) => goTo(event, currentUser ? '/korpa' : '/prijava')}>
-            Korpa ({cartCount})
-          </a>
-          {!currentUser && (
-            <a href="/prijava" onClick={(event) => goTo(event, '/prijava')}>
-              Prijava
-            </a>
-          )}
-          {currentUser?.role === 'admin' && (
-            <a href="/admin" onClick={(event) => goTo(event, '/admin')}>
-              Admin
-            </a>
-          )}
-        </div>
+    const logoutHandler = async () => {
+        try {
+            await logoutApiCall().unwrap();
+            dispatch(logout());
+            navigate('/prijava');
+        } catch (err) {
+            console.error('Logout failed:', err);
+        }
+    };
 
-        <div className="account-actions">
-          {currentUser ? (
-            <a className="contact-link" href="/profile" onClick={(event) => goTo(event, '/profile')}>
-              {currentUser.name || currentUser.email}
-            </a>
-          ) : (
-            <a className="contact-link" href="tel:+381601234567">
-              060 123 4567
-            </a>
-          )}
-        </div>
-      </nav>
-    </header>
-  );
-}
+    const goToSection = (e, sectionId) => {
+        e.preventDefault();
+        if (location.pathname === '/') {
+            document.querySelector(sectionId)?.scrollIntoView({ behavior: 'smooth' });
+        } else {
+            navigate('/' + sectionId);
+        }
+    };
+
+    return (
+        <header>
+            <nav className="topbar">
+                <a className="brand" href="/" onClick={(e) => { e.preventDefault(); navigate('/'); }}>
+                    FreshFit sokovi
+                </a>
+
+                <div className="nav-links">
+                    <a href="/" onClick={(e) => { e.preventDefault(); navigate('/'); }}>Pocetna</a>
+                    <a href="/#katalog" onClick={(e) => goToSection(e, '#katalog')}>Proizvodi</a>
+                    <a href="/#paketi" onClick={(e) => goToSection(e, '#paketi')}>Paketi</a>
+                    <a href="/korpa" onClick={(e) => { e.preventDefault(); navigate('/korpa'); }}>
+                        Korpa ({cartCount})
+                    </a>
+                    {!userInfo && (
+                        <a href="/prijava" onClick={(e) => { e.preventDefault(); navigate('/prijava'); }}>
+                            Prijava
+                        </a>
+                    )}
+                    {userInfo?.isAdmin && (
+                        <a href="/admin" onClick={(e) => { e.preventDefault(); navigate('/admin'); }}>
+                            Admin
+                        </a>
+                    )}
+                    {userInfo && (
+                        <a href="/profile" onClick={(e) => { e.preventDefault(); navigate('/profile'); }}>
+                            {userInfo.name}
+                        </a>
+                    )}
+                    {userInfo && (
+                        <button onClick={logoutHandler}>Odjava</button>
+                    )}
+                </div>
+
+                <div className="account-actions">
+                    <a className="contact-link" href="tel:+381601234567">060 123 4567</a>
+                </div>
+            </nav>
+        </header>
+    );
+};
 
 export default Header;
